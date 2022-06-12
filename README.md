@@ -1,0 +1,1 @@
+# OpenCore_NO_ACPI_Build
