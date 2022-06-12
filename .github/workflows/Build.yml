@@ -1,0 +1,68 @@
+name: Build
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      clean_cache:
+        description: 'Clear caches'
+        required: false
+        type: boolean
+
+env:
+  PROJECT_TYPE: UEFI
+  FORCE_INSTALL: 1
+  HAS_OPENSSL_BUILD: 1
+  HAS_OPENSSL_W32BUILD: 0
+  WERROR: 1
+
+jobs:
+  build-macos:
+    name: macOS XCODE5
+    runs-on: macos-latest
+    env:
+      JOB_TYPE: BUILD
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Add Linux Toolchain
+        run: brew tap FiloSottile/homebrew-musl-cross
+
+      - name: Install Linux Toolchain
+        run: brew install musl-cross
+        env:
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+
+      - name: Install Dependencies
+        run: brew install openssl mingw-w64 nasm
+        env:
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+
+      - name: CI Bootstrap
+        run: |
+          src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
+          git clone https://gitee.com/btwise/OpenCore_NO_ACPI.git OpenCore_NO_ACPI
+          
+          echo "ocver=$(grep OPEN_CORE_VERSION OpenCore_NO_ACPI/Include/Acidanthera/Library/OcMainLib.h | sed 's/.*"\(.*\)".*/\1/' | grep -E '^[0-9.]+$')" >> $GITHUB_ENV
+          pushd ./OpenCore_NO_ACPI && echo "commitver=$(git rev-parse --short HEAD)" >> $GITHUB_ENV && popd
+
+          echo ${{ env.ocver }}_${{ env.commitver }}
+
+      - run: cd OpenCore_NO_ACPI && ./build_duet.tool
+      - run: cd OpenCore_NO_ACPI && ./build_oc.tool
+      
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: macOS XCODE5 Artifacts
+          path: OpenCore_NO_ACPI/Binaries/*.zip
+      - name: Upload to Release
+        uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: OpenCore_NO_ACPI/Binaries/*.zip
+          tag: ${{ env.ocver }}_${{ env.commitver }}
+          file_glob: true
