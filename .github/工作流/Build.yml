@@ -49,7 +49,7 @@ jobs:
           echo "ocver=$(grep OPEN_CORE_VERSION OpenCore_NO_ACPI/Include/Acidanthera/Library/OcMainLib.h | sed 's/.*"\(.*\)".*/\1/' | grep -E '^[0-9.]+$')" >> $GITHUB_ENV
           pushd ./OpenCore_NO_ACPI && echo "commitver=$(git rev-parse --short HEAD)" >> $GITHUB_ENV && popd
 
-          echo ${{ env.ocver }}_${{ env.commitver }}
+      - run: echo ${{ env.ocver }}_${{ env.commitver }}
 
       - run: cd OpenCore_NO_ACPI && ./build_duet.tool
       - run: cd OpenCore_NO_ACPI && ./build_oc.tool
