@@ -11,7 +11,7 @@ name: Build OpenCore-Mod
 on:
   push:
   schedule:
-    - cron: '* */12 * * *'
+    - cron: '* */6 * * *'
   workflow_dispatch:
 
 env:
