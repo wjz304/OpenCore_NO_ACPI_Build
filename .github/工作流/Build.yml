@@ -9,14 +9,10 @@
 name: Build OpenCore-Mod
 
 on:
+  push:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '* */12 * * *'
   workflow_dispatch:
-    inputs:
-      clean_cache:
-        description: 'Clear caches'
-        required: false
-        type: boolean
 
 env:
   PROJECT_TYPE: UEFI
