@@ -60,11 +60,11 @@ jobs:
 
           if [ "${ocversion}_${commitver}" == "${latesttag}" ]; then
               echo "isNew=false" >> $GITHUB_ENV
+          else
+              echo "isNew=true" >> $GITHUB_ENV
               echo "ocversion=$(ocversion)" >> $GITHUB_ENV
               echo "commitver=$(commitver)" >> $GITHUB_ENV
               echo "latesttag=$(latesttag)" >> $GITHUB_ENV
-          else
-              echo "isNew=true" >> $GITHUB_ENV
           fi
       
       - name: build Duet and OC
