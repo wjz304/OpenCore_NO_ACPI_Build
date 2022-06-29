@@ -85,22 +85,22 @@ jobs:
           fi
       
       - name: build Duet
-#        if: env.isNew == 'true'
+        if: env.isNew == 'true'
         run: cd OpenCore_NO_ACPI && ./build_duet.tool
 
       - name: build OC
-#        if: env.isNew == 'true'
+        if: env.isNew == 'true'
         run: cd OpenCore_NO_ACPI && ./build_oc.tool
 
       - name: Upload to Artifacts
-#        if: env.isNew == 'true'
+        if: env.isNew == 'true'
         uses: actions/upload-artifact@v3
         with:
           name: macOS XCODE5 Artifacts
           path: OpenCore_NO_ACPI/Binaries/*.zip
 
       - name: Upload to Release
-#        if: env.isNew == 'true'
+        if: env.isNew == 'true'
         uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
