@@ -51,6 +51,15 @@ jobs:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
 
+      - name: make and install iasl
+        run: |
+          git clone https://github.com/acpica/acpica.git acpica
+          cd acpica
+          make clean
+          make
+          cp generate/unix/bin/iasl ~/.
+          cp generate/unix/bin/acpiexec ~/.
+
       - name: CI Bootstrap
         run: |
           src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
