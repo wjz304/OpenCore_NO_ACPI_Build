@@ -45,6 +45,12 @@ jobs:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
 
+      - name: Install Dependencies
+        run: brew install openssl mingw-w64 nasm
+        env:
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+
       - name: CI Bootstrap
         run: |
           src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
@@ -54,26 +60,27 @@ jobs:
           pushd ./OpenCore_NO_ACPI && commitver=$(git rev-parse --short HEAD) && popd
           latesttag=$(wget -qO- -t1 -T2 "https://api.github.com/repos/wjz304/OpenCore_NO_ACPI_Build/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
 
-          echo $ocversion
-          echo $commitver
-          echo $latesttag
+          echo ocversion: $ocversion
+          echo commitver: $commitver
+          echo latesttag: $latesttag
 
           if [ "${ocversion}_${commitver}" == "${latesttag}" ]; then
               echo "isNew=false" >> $GITHUB_ENV
           else
               echo "isNew=true" >> $GITHUB_ENV
-              echo "ocversion=$(ocversion)" >> $GITHUB_ENV
-              echo "commitver=$(commitver)" >> $GITHUB_ENV
-              echo "latesttag=$(latesttag)" >> $GITHUB_ENV
+              echo "ocversion=${ocversion}" >> $GITHUB_ENV
+              echo "commitver=${commitver}" >> $GITHUB_ENV
+              echo "latesttag=${latesttag}" >> $GITHUB_ENV
           fi
       
-      - name: build Duet and OC
-#        if: env.isNew == 'true'
-        run: |
-          cd OpenCore_NO_ACPI
-          ./build_duet.tool
-          ./build_oc.tool
-      
+      - name: build Duet
+        if: env.isNew == 'true'
+        run: cd OpenCore_NO_ACPI && ./build_duet.tool
+
+      - name: build OC
+        if: env.isNew == 'true'
+        run: cd OpenCore_NO_ACPI && ./build_oc.tool
+
       - name: Upload to Artifacts
         if: env.isNew == 'true'
         uses: actions/upload-artifact@v3
