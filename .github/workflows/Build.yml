@@ -67,8 +67,8 @@ jobs:
           
           src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
 
-          ocversion=$(grep OPEN_CORE_VERSION OpenCore_NO_ACPI/Include/Acidanthera/Library/OcMainLib.h | sed 's/.*"\(.*\)".*/\1/' | grep -E '^[0-9.]+$')
-          pushd ./OpenCore_NO_ACPI && commitver=$(git rev-parse --short HEAD) && popd
+          ocversion=$(grep OPEN_CORE_VERSION Include/Acidanthera/Library/OcMainLib.h | sed 's/.*"\(.*\)".*/\1/' | grep -E '^[0-9.]+$')
+          commitver=$(git rev-parse --short HEAD)
           latesttag=$(wget -qO- -t1 -T2 "https://api.github.com/repos/wjz304/OpenCore_NO_ACPI_Build/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
 
           echo ocversion: $ocversion
