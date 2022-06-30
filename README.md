@@ -1,5 +1,8 @@
 # OpenCore_NO_ACPI_Build
-<!-- shields -->
+
+## 介绍  
+[OpenCore_NO_ACPI_Build](https://github.com/wjz304/OpenCore_NO_ACPI_Build)
+
 <!-- downloads -->
 <a href="https://github.com/wjz304/OpenCore_NO_ACPI_Build/releases">
 <img src="https://img.shields.io/github/downloads/wjz304/OpenCore_NO_ACPI_Build/total.svg?style=flat" alt="downloads"/>
