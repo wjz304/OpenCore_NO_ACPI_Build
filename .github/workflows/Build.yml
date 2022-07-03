@@ -68,8 +68,8 @@ jobs:
           #latesttag=$(curl -sL https://api.github.com/repos/wjz304/OpenCore_NO_ACPI_Build/releases | jq -r .[0].tag_name)
           # jq 解析json, 'latest' 快  
           #latesttag=$(curl -sL https://api.github.com/repos/wjz304/OpenCore_NO_ACPI_Build/releases/latest | jq -r .tag_name)
-          # jq 解析json, 'latest' 快, 增加  token 防止获取不到  
-          latesttag=$(curl -H "Authorization: Token ${{ secrets.GITHUB_TOKEN }}" -sL https://api.github.com/repos/wjz304/OpenCore_NO_ACPI_Build/releases/latest | jq -r .tag_name)
+          # jq 解析json, 'latest' 快, 增加  token 防止获取不到  # https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps  
+          latesttag=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -sL https://api.github.com/repos/wjz304/OpenCore_NO_ACPI_Build/releases/latest | jq -r .tag_name)
 
           currenttag=$(grep OPEN_CORE_VERSION Include/Acidanthera/Library/OcMainLib.h | sed 's/.*"\(.*\)".*/\1/' | grep -E '^[0-9.]+$')_$(git rev-parse --short HEAD)
           
