@@ -11,7 +11,7 @@ name: Build OpenCore-Mod
 on:
   push:
   schedule:
-    - cron: '* */6 * * *'
+    - cron: '* 0/6 * * *'
   workflow_dispatch:
 
 env:
@@ -45,16 +45,6 @@ jobs:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
 
-
-      - name: make and install iasl
-        run: |
-          git clone https://github.com/acpica/acpica.git acpica
-          cd acpica
-          make clean
-          make
-#          cp generate/unix/bin/iasl ~/.
-#          cp generate/unix/bin/acpiexec ~/.
-
       - name: CI Bootstrap
         run: |
           git clone https://gitee.com/btwise/OpenCore_NO_ACPI.git OpenCore_NO_ACPI
@@ -62,13 +52,7 @@ jobs:
           
           src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
 
-          # grep 过滤  
-          #latesttag=$(wget -qO- -t1 -T2 "https://api.github.com/repos/wjz304/OpenCore_NO_ACPI_Build/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
-          # jq 解析json, 'all' 慢  
-          #latesttag=$(curl -sL https://api.github.com/repos/wjz304/OpenCore_NO_ACPI_Build/releases | jq -r .[0].tag_name)
-          # jq 解析json, 'latest' 快  
-          #latesttag=$(curl -sL https://api.github.com/repos/wjz304/OpenCore_NO_ACPI_Build/releases/latest | jq -r .tag_name)
-          # jq 解析json, 'latest' 快, 增加  token 防止获取不到  # https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps  
+          # jq parses json, # token https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps  
           latesttag=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -sL https://api.github.com/repos/wjz304/OpenCore_NO_ACPI_Build/releases/latest | jq -r .tag_name)
 
           currenttag=$(grep OPEN_CORE_VERSION Include/Acidanthera/Library/OcMainLib.h | sed 's/.*"\(.*\)".*/\1/' | grep -E '^[0-9.]+$')_$(git rev-parse --short HEAD)
