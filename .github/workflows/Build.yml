@@ -11,7 +11,7 @@ name: Build OpenCore-Mod
 on:
   push:
   schedule:
-    - cron: '0 0/6 * * *'
+    - cron: '20 */6 * * *'
   workflow_dispatch:
 
 env:
@@ -67,8 +67,10 @@ jobs:
           fi
 
           echo "currenttag=${currenttag}" >> $GITHUB_ENV
+          echo "gitrevhead=$(git rev-parse HEAD)" >> $GITHUB_ENV
           echo ${{ env.currenttag }}
-
+          echo ${{ env.gitrevhead }}
+          
       - name: build Duet
         if: env.isNew == 'true'
         run: cd OpenCore_NO_ACPI && ./build_duet.tool
@@ -86,9 +88,12 @@ jobs:
 
       - name: Upload to Release
         if: env.isNew == 'true'
-        uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: OpenCore_NO_ACPI/Binaries/*.zip
-          tag: ${{ env.currenttag }}
-          file_glob: true
+          tag_name: ${{ env.currenttag }}
+          body: |
+            Changes:  
+            [View on gitee](https://gitee.com/btwise/OpenCore_NO_ACPI/commit/${{ env.gitrevhead }})  
+          files: OpenCore_NO_ACPI/Binaries/*.zip
