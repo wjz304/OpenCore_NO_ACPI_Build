@@ -95,5 +95,5 @@ jobs:
           tag_name: ${{ env.currenttag }}
           body: |
             Changes:  
-            [View on gitee](https://gitee.com/btwise/OpenCore_NO_ACPI/commit/${{ env.gitrevhead }})  
+            [View on gitee](https://gitee.com/btwise/OpenCore_NO_ACPI/commits/${{ env.gitrevhead }})  
           files: OpenCore_NO_ACPI/Binaries/*.zip
