@@ -6,7 +6,7 @@
 #
 
 
-name: Build OpenCore-Mod
+name: Custom OpenCore-Mod
 
 on:
   workflow_dispatch:
