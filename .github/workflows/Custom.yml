@@ -89,7 +89,7 @@ jobs:
             ${{ github.event.issue.user.login }} 您好.
             您自定义的 OpenCore Mod 已开始编译。请前往下面的 URL 查看详细信息。
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            > 编译时间约为半小时, 请耐心等待. 编译完成后, 问题将自动解决。
+            > 编译时间约为半小时, 请耐心等待. 编译完成后, 问题将自动关闭。
             ----
             Hello ${{ github.event.issue.user.login }}. 
             Your customized OpenCore Mod has started compiling. Please click the URL below to view the details.
