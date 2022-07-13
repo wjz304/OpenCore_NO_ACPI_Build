@@ -147,7 +147,7 @@ jobs:
           echo "### OpenCore-Mod Custom" >> $GITHUB_STEP_SUMMARY
           echo "👉 version: ${{ env.currenttag }}" >> $GITHUB_STEP_SUMMARY
           echo "👉 Changes: [View on gitee](https://gitee.com/btwise/OpenCore_NO_ACPI/commits/${{ env.gitrevhead }})" >> $GITHUB_STEP_SUMMARY
-          if [ ${{ env.iscustom }} == 'issues' ]; then
+          if [ ${{ env.iscustom }} == 'true' ]; then
             echo "👉 issues: [#${{ github.event.issue.number }}]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/issues/${{ github.event.issue.number }})" >> $GITHUB_STEP_SUMMARY
           else
             echo "👉 Custom: {welcome: ${{ env.welcome }}, custom: ${{ env.custom }}}" >> $GITHUB_STEP_SUMMARY
