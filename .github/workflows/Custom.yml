@@ -150,7 +150,7 @@ jobs:
           if [ ${{ env.iscustom }} == 'issues' ]; then
             echo "👉 issues: [#${{ github.event.issue.number }}]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/issues/${{ github.event.issue.number }})" >> $GITHUB_STEP_SUMMARY
           else
-            echo "👉 Custom: welcome=${{ env.welcome }}, custom=${{ env.custom }}" >> $GITHUB_STEP_SUMMARY
+            echo "👉 Custom: {welcome: ${{ env.welcome }}, custom: ${{ env.custom }}}" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Upload to Artifacts
@@ -170,6 +170,7 @@ jobs:
           body: |
             ${{ github.event.issue.user.login }} 您好.
             您自定义的 OpenCore Mod 已编译完成。请前往下面的 URL 下载。
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
             ----
             Hello ${{ github.event.issue.user.login }}. 
             Your customized OpenCore has been compiled. Please click the URL below to download it.
