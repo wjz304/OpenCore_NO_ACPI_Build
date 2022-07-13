@@ -21,4 +21,4 @@
 任何问题请参考 作者说明  [OpenCore MOD版](https://bbs.pcbeta.com/viewthread-1838814-1-1.html)。 
 
 
-
+[👻 ](https://github.com/wjz304/OpenCore_NO_ACPI_Build/issues/1)
