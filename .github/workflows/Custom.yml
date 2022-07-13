@@ -9,6 +9,8 @@
 name: Custom OpenCore-Mod
 
 on:
+  issues:
+    types: [opened]
   workflow_dispatch:
     inputs:
       welcome:
@@ -39,41 +41,145 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Get Info
+        run: |
+          if [ ${{ github.event_name }} == 'issues' ]; then
+            # https://docs.github.com/cn/rest/issues/events
+            
+            echo "issues=true" >> $GITHUB_ENV
+            title=$(echo ${{ github.event.issue.title }} | tr '[:upper:]' '[:lower:]')
+            if [ ${title:0:6} == 'custom' ]; then
+              echo "iscustom=true" >> $GITHUB_ENV
+              echo "welcome=$(echo '${{ github.event.issue.body }}' | jq -r .welcome)" >> $GITHUB_ENV
+              echo "custom=$(echo '${{ github.event.issue.body }}' | jq -r .custom)" >> $GITHUB_ENV
+            else
+              echo "iscustom=false" >> $GITHUB_ENV
+              echo "welcome=${{ inputs.welcome }}" >> $GITHUB_ENV
+              echo "custom=${{ inputs.custom }}" >> $GITHUB_ENV
+            fi
+          else
+            echo "issues=false" >> $GITHUB_ENV
+            echo "iscustom=false" >> $GITHUB_ENV
+            echo "welcome=${{ inputs.welcome }}" >> $GITHUB_ENV
+            echo "custom=${{ inputs.custom }}" >> $GITHUB_ENV
+          fi
+
+          echo issues: ${{ env.issues }}
+          echo iscustom: ${{ env.iscustom }}
+          echo welcome: ${{ env.welcome }}
+          echo custom: ${{ env.custom }}
+
+      - name: Add labels
+        if: ${{ env.iscustom }} == 'true'
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'add-labels'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          labels: 'custom'
+
+      - name: Create comment
+        if: ${{ env.iscustom }} == 'true'
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'create-comment'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            ${{ github.event.issue.user.login }} 您好.
+            您自定义的 OpenCore Mod 已开始编译。请前往下面的 URL 查看详细信息。
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            > 编译时间约为半小时, 请耐心等待. 编译完成后, 问题将自动解决。
+            ----
+            Hello ${{ github.event.issue.user.login }}. 
+            Your customized OpenCore Mod has started compiling. Please click the URL below to view the details.
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            > The compilation time is about half an hour, Please wait patiently. After the compilation is completed, the problem will be closed automatically.
+
+          emoji: heart
+
       - name: Add Linux Toolchain
+        if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
         run: brew tap FiloSottile/homebrew-musl-cross
 
       - name: Install Linux Toolchain
+        if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
         run: brew install musl-cross
         env:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
 
       - name: Install Dependencies
+        if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
         run: brew install openssl mingw-w64 nasm jq
         env:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
 
       - name: CI Bootstrap
+        if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
         run: |
           git clone https://gitee.com/btwise/OpenCore_NO_ACPI.git OpenCore_NO_ACPI
           cd ./OpenCore_NO_ACPI
           
           src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
 
-          sed -i'.bak' "s#Welcome To Use  MOD-OC#${{ inputs.welcome }}#g; s#MOD By BTWISE | WeChat:15242609 QQ:15242609#${{ inputs.custom }}#g" ./Library/OcMainLib/OpenCoreMisc.c
+          sed -i'.bak' "s#Welcome To Use  MOD-OC#${{ env.welcome }}#g; s#MOD By BTWISE | WeChat:15242609 QQ:15242609#${{ env.custom }}#g" ./Library/OcMainLib/OpenCoreMisc.c
 
-          
+          currenttag=$(grep OPEN_CORE_VERSION Include/Acidanthera/Library/OcMainLib.h | sed 's/.*"\(.*\)".*/\1/' | grep -E '^[0-9.]+$')_$(git rev-parse --short HEAD)
+
+          echo "currenttag=${currenttag}" >> $GITHUB_ENV
+          echo "gitrevhead=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo ${{ env.currenttag }}
+          echo ${{ env.gitrevhead }}
+
       - name: build Duet
+        if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
         run: cd OpenCore_NO_ACPI && ./build_duet.tool
 
       - name: build OC
+        if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
         run: cd OpenCore_NO_ACPI && ./build_oc.tool
 
+      - name: Generate artifact info
+        if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
+        run: |
+          echo "### OpenCore-Mod Custom" >> $GITHUB_STEP_SUMMARY
+          echo "👉 version: ${{ env.currenttag }}" >> $GITHUB_STEP_SUMMARY
+          echo "👉 Changes: [View on gitee](https://gitee.com/btwise/OpenCore_NO_ACPI/commits/${{ env.gitrevhead }})" >> $GITHUB_STEP_SUMMARY
+          if [ ${{ env.iscustom }} == 'issues' ]; then
+            echo "👉 issues: [#${{ github.event.issue.number }}]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/issues/${{ github.event.issue.number }})" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "👉 Custom: welcome=${{ env.welcome }}, custom=${{ env.custom }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
       - name: Upload to Artifacts
+        if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
         uses: actions/upload-artifact@v3
         with:
           name: OpenCore-Mod Custom
           path: OpenCore_NO_ACPI/Binaries/*.zip
+          
+      - name: Create comment
+        if: ${{ env.iscustom }} == 'true'
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'create-comment'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            ${{ github.event.issue.user.login }} 您好.
+            您自定义的 OpenCore Mod 已编译完成。请前往下面的 URL 下载。
+            ----
+            Hello ${{ github.event.issue.user.login }}. 
+            Your customized OpenCore has been compiled. Please click the URL below to download it.
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          emoji: hooray
 
-
+      - name: Close issue
+        if: ${{ env.iscustom }} == 'true'
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'close-issue'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
