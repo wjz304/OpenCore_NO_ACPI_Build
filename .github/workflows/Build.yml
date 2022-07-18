@@ -86,6 +86,14 @@ jobs:
           name: macOS XCODE5 Artifacts
           path: OpenCore_NO_ACPI/Binaries/*.zip
 
+      - name: Commit and Push
+        if: env.isNew == 'true'
+        run: |
+          echo ${{ env.currenttag }} > latest
+          git add latest
+          git commit -m "update $(date +%Y-%m-%d" "%H:%M:%S)"
+          git push -f
+
       - name: Upload to Release
         if: env.isNew == 'true'
         uses: softprops/action-gh-release@v1
