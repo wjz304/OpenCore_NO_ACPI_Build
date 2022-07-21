@@ -119,7 +119,7 @@ jobs:
       - name: CI Bootstrap
         if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
         run: |
-          git clone https://gitee.com/btwise/OpenCore_NO_ACPI.git OpenCore_NO_ACPI
+          git clone --depth=100 https://gitee.com/btwise/OpenCore_NO_ACPI.git OpenCore_NO_ACPI
           cd ./OpenCore_NO_ACPI
           
           src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
