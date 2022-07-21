@@ -54,11 +54,14 @@ jobs:
 
           # jq parses json, # token https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps  
           latesttag=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -sL https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r .tag_name)
-
+          latestgit=${latesttag#*_}
           currenttag=$(grep OPEN_CORE_VERSION Include/Acidanthera/Library/OcMainLib.h | sed 's/.*"\(.*\)".*/\1/' | grep -E '^[0-9.]+$')_$(git rev-parse --short HEAD)
+          currentgit=${currenttag#*_}
           
           echo latesttag: $latesttag
+          echo latestgit: $latestgit
           echo currenttag: $currenttag
+          echo currentgit: $currentgit
 
           if [ "${latesttag}" == "${currenttag}" ]; then
               echo "isNew=false" >> $GITHUB_ENV
@@ -67,9 +70,14 @@ jobs:
           fi
 
           echo "currenttag=${currenttag}" >> $GITHUB_ENV
-          echo "gitrevhead=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "gitrevhead=${currentgit}" >> $GITHUB_ENV
+          echo 'gitupgrade<<EOF' >> $GITHUB_ENV
+          git log ${latestgit}..${currentgit} --oneline >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
           echo ${{ env.currenttag }}
           echo ${{ env.gitrevhead }}
+          echo ${{ env.gitupgrade }}
           
       - name: build Duet
         if: env.isNew == 'true'
@@ -103,5 +111,6 @@ jobs:
           tag_name: ${{ env.currenttag }}
           body: |
             Changes:  
+            ${{ env.gitupgrade }}  
             [View on gitee](https://gitee.com/btwise/OpenCore_NO_ACPI/commits/${{ env.gitrevhead }})  
           files: OpenCore_NO_ACPI/Binaries/*.zip
