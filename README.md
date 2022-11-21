@@ -20,6 +20,7 @@
 本项目仅自动从 [btwise’s OpenCore_NO_ACPI](https://gitee.com/btwise/OpenCore_NO_ACPI) 拉取代码进行编译。  
 详细说明请参考 作者说明  [OpenCore MOD版](https://bbs.pcbeta.com/viewthread-1838814-1-1.html)。 
 
+OCAT:  请参考 [#3](https://github.com/wjz304/OpenCore_NO_ACPI_Build/issues/3)
 <!-- 
 OCAT:  
  前置同步:
