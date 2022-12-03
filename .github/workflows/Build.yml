@@ -54,6 +54,7 @@ jobs:
       - name: CI Bootstrap
         run: |
           git clone --depth=100 https://gitee.com/btwise/OpenCore_NO_ACPI.git OpenCore_NO_ACPI
+          sed -i.bak 's#_(BOOLEAN                     , SkipCustomEntryCheck        ,     , FALSE                               , ())$#&                   \\#' OpenCore_NO_ACPI/Include/Acidanthera/Library/OcConfigurationLib.h
           cd ./OpenCore_NO_ACPI
           
           src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
