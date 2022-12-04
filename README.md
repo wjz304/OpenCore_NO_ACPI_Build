@@ -22,7 +22,7 @@
 
 OCAT:  
 https://github.com/ic005k/OCAuxiliaryTools  
-![Image text](screenshot/QQ20221128-100518%402x.png)
+![Image text](https://user-images.githubusercontent.com/5615843/205479375-20464937-fcf9-4310-a996-71ba3a2e1a21.png)
 
 
 # [🈲](https://github.com/wjz304/OpenCore_NO_ACPI_Build/issues/1)
