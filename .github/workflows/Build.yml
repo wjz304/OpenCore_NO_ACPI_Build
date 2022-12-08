@@ -54,7 +54,7 @@ jobs:
       - name: CI Bootstrap
         run: |
           git clone --depth=100 https://gitee.com/btwise/OpenCore_NO_ACPI.git OpenCore_NO_ACPI
-          sed -i.bak 's#_(BOOLEAN                     , SkipCustomEntryCheck        ,     , FALSE                               , ())$#&                   \\#' OpenCore_NO_ACPI/Include/Acidanthera/Library/OcConfigurationLib.h
+          # sed -i.bak 's#_(BOOLEAN                     , SkipCustomEntryCheck        ,     , FALSE                               , ())$#&                   \\#' OpenCore_NO_ACPI/Include/Acidanthera/Library/OcConfigurationLib.h
           cd ./OpenCore_NO_ACPI
           
           src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
@@ -88,14 +88,14 @@ jobs:
       - name: build Duet
         if: env.isNew == 'true'
         run: |
-          sed -i.bak "s|https://gitee.com/btwise/ocbuild/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_duet.tool
+          # sed -i.bak "s|https://gitee.com/btwise/ocbuild/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_duet.tool
           cd OpenCore_NO_ACPI
           ./build_duet.tool
 
       - name: build OC
         if: env.isNew == 'true'
         run: |
-          sed -i.bak "s|https://gitcode.net/btwise/ocbuild/-/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_oc.tool
+          # sed -i.bak "s|https://gitcode.net/btwise/ocbuild/-/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_oc.tool
           cd OpenCore_NO_ACPI
           ./build_oc.tool
 
