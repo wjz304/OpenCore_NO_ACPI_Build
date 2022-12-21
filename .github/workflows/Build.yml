@@ -28,7 +28,13 @@ jobs:
     env:
       JOB_TYPE: BUILD
     steps:
-      - uses: actions/checkout@main
+      - name: Checkout
+        uses: actions/checkout@main
+      
+      - name: Set up Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
       
       - name: Initialization environment
         run : |
@@ -87,14 +93,14 @@ jobs:
       - name: build Duet
         if: env.isNew == 'true'
         run: |
-          sed -i.bak "s|https://gitee.com/btwise/ocbuild/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_duet_en.tool
+          # sed -i.bak "s|https://gitee.com/btwise/ocbuild/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_duet_en.tool
           cd OpenCore_NO_ACPI
           ./build_duet_en.tool
 
       - name: build OC
         if: env.isNew == 'true'
         run: |
-          sed -i.bak "s|https://gitcode.net/btwise/ocbuild/-/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_oc_en.tool
+          # sed -i.bak "s|https://gitcode.net/btwise/ocbuild/-/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_oc_en.tool
           cd OpenCore_NO_ACPI
           ./build_oc_en.tool
 
