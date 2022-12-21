@@ -62,6 +62,9 @@ jobs:
           git clone --depth=100 https://gitee.com/btwise/OpenCore_NO_ACPI.git OpenCore_NO_ACPI
           cd ./OpenCore_NO_ACPI
           
+          # 容错
+          [[ $(head -n 1 Library/OcConfigurationLib/CheckSchema.py) != \#\!* ]] && sed -i.bak '1d' Library/OcConfigurationLib/CheckSchema.py
+
           src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
 
           # jq parses json, # token https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps  
