@@ -85,6 +85,7 @@ jobs:
               echo "currenttag=${currenttag}" >> $GITHUB_ENV
               echo "gitrevhead=${currentgit}" >> $GITHUB_ENV
               echo 'gitupgrade<<EOF' >> $GITHUB_ENV
+              [ "${latestgit}" == "null" ] && latestgit=.
               git log ${latestgit}..${currentgit} --oneline >> $GITHUB_ENV
               echo 'EOF' >> $GITHUB_ENV
           fi
