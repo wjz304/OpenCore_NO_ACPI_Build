@@ -97,16 +97,16 @@ jobs:
       - name: build Duet
         if: env.isNew == 'true'
         run: |
-          # sed -i.bak "s|https://gitee.com/btwise/ocbuild/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_duet_en.tool
+          sed -i.bak "s|https://gitee.com/btwise/ocbuild/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_duet.tool
           cd OpenCore_NO_ACPI
-          ./build_duet_en.tool
+          ./build_duet.tool
 
       - name: build OC
         if: env.isNew == 'true'
         run: |
-          # sed -i.bak "s|https://gitcode.net/btwise/ocbuild/-/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_oc_en.tool
+          sed -i.bak "s|https://gitcode.net/btwise/ocbuild/-/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_oc.tool
           cd OpenCore_NO_ACPI
-          ./build_oc_en.tool
+          ./build_oc.tool
 
       - name: Upload to Artifacts
         if: env.isNew == 'true'
