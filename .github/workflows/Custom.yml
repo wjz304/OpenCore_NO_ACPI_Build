@@ -1,10 +1,9 @@
 #
 # Copyright (C) 2022 Ing <https://github.com/wjz304>
-# 
+#
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
 #
-
 
 name: Custom OpenCore-Mod
 
@@ -14,16 +13,14 @@ on:
   workflow_dispatch:
     inputs:
       welcome:
-        description: 'Welcome (bottom left)'
+        description: "Welcome (bottom left)"
         required: true
-        default: 'Welcome To Use  MOD-OC'
-
+        default: "Welcome To Use  MOD-OC"
 
       custom:
-        description: 'Custom (bottom right)'
+        description: "Custom (bottom right)"
         required: true
-        default: ''
-
+        default: ""
 
 env:
   PROJECT_TYPE: UEFI
@@ -41,18 +38,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@main
-      
+
       - name: Set up Python 3
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-      
+          python-version: "3.10"
+
       - name: Initialization environment
-        run : |
+        run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           sudo systemsetup -settimezone "Asia/Shanghai"
-          
+
       - name: Get Info
         run: |
           if [ ${{ github.event_name }} == 'issues' ]; then
@@ -85,16 +82,16 @@ jobs:
         if: ${{ env.iscustom }} == 'true'
         uses: actions-cool/issues-helper@v3
         with:
-          actions: 'add-labels'
+          actions: "add-labels"
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
-          labels: 'custom'
+          labels: "custom"
 
       - name: Create comment
         if: ${{ env.iscustom }} == 'true'
         uses: actions-cool/issues-helper@v3
         with:
-          actions: 'create-comment'
+          actions: "create-comment"
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
           body: |
@@ -131,9 +128,10 @@ jobs:
       - name: CI Bootstrap
         if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
         run: |
+          git config --global http.postBuffer 1048576000
           git clone --depth=100 https://gitee.com/btwise/OpenCore_NO_ACPI.git OpenCore_NO_ACPI
           cd ./OpenCore_NO_ACPI
-          
+
           # 容错
           [[ $(head -n 1 Library/OcConfigurationLib/CheckSchema.py) != \#\!* ]] && sed -i.bak '1d' Library/OcConfigurationLib/CheckSchema.py
 
@@ -180,12 +178,12 @@ jobs:
         with:
           name: OpenCore-Mod Custom
           path: OpenCore_NO_ACPI/Binaries/*.zip
-          
+
       - name: Create comment
         if: ${{ env.iscustom }} == 'true'
         uses: actions-cool/issues-helper@v3
         with:
-          actions: 'create-comment'
+          actions: "create-comment"
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
           body: |
@@ -202,6 +200,6 @@ jobs:
         if: ${{ env.iscustom }} == 'true'
         uses: actions-cool/issues-helper@v3
         with:
-          actions: 'close-issue'
+          actions: "close-issue"
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number }}

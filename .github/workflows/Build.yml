@@ -1,17 +1,16 @@
 #
 # Copyright (C) 2022 Ing <https://github.com/wjz304>
-# 
+#
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
 #
-
 
 name: Build OpenCore-Mod
 
 on:
   push:
   schedule:
-    - cron: '20 */6 * * *'
+    - cron: "20 */6 * * *"
   workflow_dispatch:
 
 env:
@@ -30,18 +29,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@main
-      
+
       - name: Set up Python 3
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-      
+          python-version: "3.10"
+
       - name: Initialization environment
-        run : |
+        run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           sudo systemsetup -settimezone "Asia/Shanghai"
-          
+
       - name: Add Linux Toolchain
         run: brew tap FiloSottile/homebrew-musl-cross
 
@@ -59,9 +58,10 @@ jobs:
 
       - name: CI Bootstrap
         run: |
+          git config --global http.postBuffer 1048576000
           git clone --depth=100 https://gitee.com/btwise/OpenCore_NO_ACPI.git OpenCore_NO_ACPI
           cd ./OpenCore_NO_ACPI
-          
+
           # 容错
           [[ $(head -n 1 Library/OcConfigurationLib/CheckSchema.py) != \#\!* ]] && sed -i.bak '1d' Library/OcConfigurationLib/CheckSchema.py
 
@@ -72,7 +72,7 @@ jobs:
           latestgit=${latesttag#*_}
           currenttag=$(grep OPEN_CORE_VERSION Include/Acidanthera/Library/OcMainLib.h | sed 's/.*"\(.*\)".*/\1/' | grep -E '^[0-9.]+$')_$(git rev-parse --short HEAD)
           currentgit=${currenttag#*_}
-          
+
           echo latesttag: $latesttag
           echo latestgit: $latestgit
           echo currenttag: $currenttag
@@ -93,20 +93,20 @@ jobs:
           echo ${{ env.currenttag }}
           echo ${{ env.gitrevhead }}
           echo ${{ env.gitupgrade }}
-          
+
       - name: build Duet
         if: env.isNew == 'true'
         run: |
-          sed -i.bak "s|https://gitee.com/btwise/ocbuild/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_duet.tool
+          # sed -i.bak "s|https://gitee.com/btwise/ocbuild/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_duet_en.tool
           cd OpenCore_NO_ACPI
-          ./build_duet.tool
+          ./build_duet_en.tool
 
       - name: build OC
         if: env.isNew == 'true'
         run: |
-          sed -i.bak "s|https://gitcode.net/btwise/ocbuild/-/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_oc.tool
+          # sed -i.bak "s|https://gitcode.net/btwise/ocbuild/-/raw/master/efibuild.sh|https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_oc_en.tool
           cd OpenCore_NO_ACPI
-          ./build_oc.tool
+          ./build_oc_en.tool
 
       - name: Upload to Artifacts
         if: env.isNew == 'true'
@@ -133,5 +133,5 @@ jobs:
           body: |
             Changes:  
             ${{ env.gitupgrade }}  
-            [View on gitee](https://gitee.com/btwise/OpenCore_NO_ACPI/commits/${{ env.gitrevhead }})  
+            [View on gitee](https://gitee.com/btwise/OpenCore_NO_ACPI/commits/${{ env.gitrevhead }})
           files: OpenCore_NO_ACPI/Binaries/*.zip
