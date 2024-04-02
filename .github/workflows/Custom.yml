@@ -40,9 +40,9 @@ jobs:
         uses: actions/checkout@main
 
       - name: Set up Python 3
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Initialization environment
         run: |
@@ -174,7 +174,7 @@ jobs:
 
       - name: Upload to Artifacts
         if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OpenCore-Mod Custom
           path: OpenCore_NO_ACPI/Binaries/*.zip
