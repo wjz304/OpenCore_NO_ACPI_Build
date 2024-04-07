@@ -32,17 +32,12 @@ env:
 jobs:
   build-macos:
     name: macOS XCODE5
-    runs-on: macos-12
+    runs-on: macos-latest
     env:
       JOB_TYPE: BUILD
     steps:
       - name: Checkout
         uses: actions/checkout@main
-
-      - name: Set up Python 3
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
 
       - name: Initialization environment
         run: |
@@ -107,23 +102,12 @@ jobs:
 
           emoji: heart
 
-      - name: Add Linux Toolchain
-        if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
-        run: brew tap FiloSottile/homebrew-musl-cross
-
       - name: Install Linux Toolchain
         if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
-        run: brew install musl-cross
-        env:
-          HOMEBREW_NO_INSTALL_CLEANUP: 1
-          HOMEBREW_NO_AUTO_UPDATE: 1
-
-      - name: Install Dependencies
-        if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
-        run: brew install openssl mingw-w64 nasm jq
-        env:
-          HOMEBREW_NO_INSTALL_CLEANUP: 1
-          HOMEBREW_NO_AUTO_UPDATE: 1
+        run: |
+          brew tap FiloSottile/homebrew-musl-cross
+          brew install musl-cross
+          brew install openssl mingw-w64 nasm jq
 
       - name: CI Bootstrap
         if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
@@ -135,7 +119,7 @@ jobs:
           # 容错
           [[ $(head -n 1 Library/OcConfigurationLib/CheckSchema.py) != \#\!* ]] && sed -i.bak '1d' Library/OcConfigurationLib/CheckSchema.py
 
-          src=$(/usr/bin/curl -Lfs https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
+          src=$(/usr/bin/curl -LfsS https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
 
           sed -i'.bak' "s#Welcome To Use  MOD-OC#${{ env.welcome }}#g; s#MOD By BTWISE | WeChat:15242609 QQ:15242609#${{ env.custom }}#g" ./Library/OcMainLib/OpenCoreMisc.c
 
