@@ -89,13 +89,17 @@ jobs:
         if: env.isNew == 'true'
         run: |
           sed -i.bak "s|curl -Lfs https://gitee.com/btwise/ocbuild/raw/master/efibuild.sh|curl -LfsS https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_duet.tool
-          cd OpenCore_NO_ACPI && ./build_duet.tool
+          # build_duet.tool opens Finder at the end, which fails in headless CI.
+          sed -i.bak 's| && open $BUILDDIR/Binaries||' OpenCore_NO_ACPI/build_duet.tool
+          cd OpenCore_NO_ACPI && bash -x ./build_duet.tool
 
       - name: build OC
         if: env.isNew == 'true'
         run: |
           sed -i.bak "s|curl -Lfs https://gitee.com/btwise/ocbuild/raw/master/efibuild.sh|curl -LfsS https://raw.githubusercontent.com/acidanthera/ocbuild/master/efibuild.sh|" OpenCore_NO_ACPI/build_oc.tool
-          cd OpenCore_NO_ACPI && ./build_oc.tool
+          # build_oc.tool opens Finder at the end, which fails in headless CI.
+          sed -i.bak 's| && open $BUILDDIR/Binaries||' OpenCore_NO_ACPI/build_oc.tool
+          cd OpenCore_NO_ACPI && bash -x ./build_oc.tool
 
       - name: Upload to Artifacts
         if: env.isNew == 'true'
