@@ -73,7 +73,11 @@ jobs:
             echo "gitrevhead=${currentgit}" >> $GITHUB_ENV
             echo 'gitupgrade<<EOF' >> $GITHUB_ENV
             [ "${latestgit}" == "null" ] && latestgit=.
-            git log ${latestgit}..${currentgit} --oneline >> $GITHUB_ENV
+            if git cat-file -e "${latestgit}^{commit}" 2>/dev/null && git cat-file -e "${currentgit}^{commit}" 2>/dev/null; then
+              git log ${latestgit}..${currentgit} --oneline >> $GITHUB_ENV
+            else
+              git log -n 20 --oneline >> $GITHUB_ENV
+            fi
             echo 'EOF' >> $GITHUB_ENV
           fi
           echo ${{ env.isNew }}
