@@ -105,8 +105,8 @@ jobs:
       - name: Install Linux Toolchain
         if: ${{ env.issues }} == 'false' || ${{ env.iscustom }} == 'true'
         run: |
-          brew tap FiloSottile/homebrew-musl-cross
-          brew install musl-cross
+          brew trust --formula filosottile/musl-cross/musl-cross
+          brew install filosottile/musl-cross/musl-cross
           brew install openssl mingw-w64 nasm jq
 
       - name: CI Bootstrap

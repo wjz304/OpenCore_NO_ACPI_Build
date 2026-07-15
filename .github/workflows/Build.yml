@@ -38,8 +38,8 @@ jobs:
 
       - name: Install Linux Toolchain
         run: |
-          brew tap FiloSottile/homebrew-musl-cross
-          brew install musl-cross
+          brew trust --formula filosottile/musl-cross/musl-cross
+          brew install filosottile/musl-cross/musl-cross
           brew install openssl mingw-w64 nasm jq
 
       - name: CI Bootstrap
@@ -54,7 +54,7 @@ jobs:
 
           src=$(/usr/bin/curl -LfsS https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
 
-          # jq parses json, # token https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps  
+          # jq parses json, # token https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps
           latesttag=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -sL https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r .tag_name)
           latestgit=${latesttag#*_}
           currenttag=$(grep OPEN_CORE_VERSION Include/Acidanthera/Library/OcMainLib.h | sed 's/.*"\(.*\)".*/\1/' | grep -E '^[0-9.]+$')_$(git rev-parse --short HEAD)
