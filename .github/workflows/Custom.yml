@@ -120,6 +120,9 @@ jobs:
           [[ $(head -n 1 Library/OcConfigurationLib/CheckSchema.py) != \#\!* ]] && sed -i.bak '1d' Library/OcConfigurationLib/CheckSchema.py
           sed -i.bak 's/ || defined(TARGET_OS_MAC)//' Library/OcCompressionLib/zlib/zutil.h
 
+          # 容错: 初始化 SelectedPath 避免 clang -Wsometimes-uninitialized (WERROR) 编译报错
+          sed -i.bak 's/\(\*SelectedPath\);/\1 = NULL;/' Library/OcMainLib/OcConfigSelector.c
+
           src=$(/usr/bin/curl -LfsS https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
 
           sed -i'.bak' "s#Welcome To Use  MOD-OC#${{ env.welcome }}#g; s#MOD By BTWISE | WeChat:15242609 QQ:15242609#${{ env.custom }}#g" ./Library/OcMainLib/OpenCoreMisc.c

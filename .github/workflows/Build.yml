@@ -52,6 +52,9 @@ jobs:
           [[ $(head -n 1 Library/OcConfigurationLib/CheckSchema.py) != \#\!* ]] && sed -i.bak '1d' Library/OcConfigurationLib/CheckSchema.py
           sed -i.bak 's/ || defined(TARGET_OS_MAC)//' Library/OcCompressionLib/zlib/zutil.h
 
+          # 容错: 初始化 SelectedPath 避免 clang -Wsometimes-uninitialized (WERROR) 编译报错
+          sed -i.bak 's/\(\*SelectedPath\);/\1 = NULL;/' Library/OcMainLib/OcConfigSelector.c
+
           src=$(/usr/bin/curl -LfsS https://raw.githubusercontent.com/acidanthera/ocbuild/master/ci-bootstrap.sh) && eval "$src" || exit 1
 
           # jq parses json, # token https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps
